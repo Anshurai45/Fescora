@@ -1,0 +1,2 @@
+import { Quote } from 'lucide-react'; import SectionTitle from './SectionTitle'; import { testimonials } from '../data/content'
+export default function Testimonials() { return <section className="section"><div className="container"><SectionTitle eyebrow="Client voices" title="Trusted by teams that expect more." /><div className="testimonial-grid">{testimonials.map(t => <article className="testimonial" key={t.name}><Quote /><p>“{t.quote}”</p><strong>{t.name}</strong><small>{t.role}</small></article>)}</div></div></section> }

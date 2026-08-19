@@ -1,0 +1,2 @@
+import SectionTitle from './SectionTitle'; import { industries } from '../data/content'
+export default function Industries() { return <section className="section industries"><div className="container"><SectionTitle eyebrow="Across sectors" title="Context-rich expertise for every environment." /><div className="industry-grid">{industries.map(([name, Icon]) => <div key={name}><Icon size={24}/><span>{name}</span></div>)}</div></div></section> }

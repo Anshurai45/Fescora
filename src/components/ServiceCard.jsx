@@ -1,0 +1,3 @@
+import { ArrowUpRight } from 'lucide-react'
+import { motion } from 'framer-motion'
+export default function ServiceCard({ service, index = 0, detailed = false }) { const [title, text, Icon, offerings] = service; return <motion.article className="service-card" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * .04 }} whileHover={{ y: -7 }}><div className="icon-box"><Icon size={21} /></div><h3>{title}</h3><p>{text}</p>{detailed && <ul className="service-offerings">{offerings.map(offer => <li key={offer}>{offer}</li>)}</ul>}<a href="/contact" aria-label={`Learn more about ${title}`}><ArrowUpRight size={20} /></a></motion.article> }
