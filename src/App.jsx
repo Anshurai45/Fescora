@@ -5,7 +5,7 @@ import Footer from "./components/FooterPremium";
 const Home = lazy(() => import("./pages/HomeCorporate"));
 const About = lazy(() => import("./pages/AboutCorporate"));
 const Services = lazy(() => import("./pages/ServicesPremium"));
-const Careers = lazy(() => import("./pages/Careers"));
+const Careers = lazy(() => import("./pages/CareersApplication"));
 const Contact = lazy(() => import("./pages/ContactPremium"));
 
 function App() {

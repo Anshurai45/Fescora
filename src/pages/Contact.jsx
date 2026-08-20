@@ -4,7 +4,7 @@ function Contact() {
       <h1>Contact Us</h1>
 
       <p>Email: info@fescora.com</p>
-      <p>Phone: +91 XXXXX XXXXX</p>
+      <p>Phone: +91 7983051409</p>
     </div>
   );
 }

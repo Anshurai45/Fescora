@@ -50,7 +50,7 @@ export default function HeroPremium() {
           <b>SECURITY</b>
           <b>FACILITIES</b>
           <b>MANPOWER</b>
-          <b>COMPLIANCE</b>
+          <b>PAYROLL MANAGEMENT</b>
         </div>
       </div>
     </section>

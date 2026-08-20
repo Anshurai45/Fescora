@@ -6,6 +6,7 @@ import './styles/blue-mint.css'
 import './styles/orange-theme.css'
 import './styles/poppins.css'
 import './styles/navbar-alignment.css'
+import './styles/career-application.css'
 import './styles/responsive.css'
 import App from './App.jsx'
 
