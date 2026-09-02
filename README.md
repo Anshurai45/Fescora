@@ -8,6 +8,8 @@ The live Vercel deployment uses these serverless endpoints from the root `api` f
 
 - `POST /api/contact`
 - `POST /api/careers/apply`
+- `POST /api/create-order`
+- `POST /api/verify-payment`
 - `GET /api/health`
 
 The separate `server` folder is only for local Express testing or for a future Render/Railway backend. If frontend and API are both in this same Vercel project, you do not need Render.
@@ -55,6 +57,10 @@ SMTP_PASS=your-16-character-app-password
 FROM_EMAIL=your-sender@gmail.com
 CONTACT_RECEIVER_EMAIL=hr.kk@fescora.com
 CAREER_RECEIVER_EMAIL=anshu.rai@fescora.com
+VITE_RAZORPAY_KEY_ID=your_test_key_id
+RAZORPAY_KEY_ID=your_test_key_id
+RAZORPAY_KEY_SECRET=your_test_key_secret
+RAZORPAY_AMOUNT=35400
 ```
 
 Important: do not set `VITE_API_URL` on Vercel when the API is in this same project. The frontend will call `/api/contact` and `/api/careers/apply` on your custom domain automatically. If `VITE_API_URL` is already set to `http://localhost:5000` in Vercel, remove it and redeploy.
@@ -74,6 +80,25 @@ It should return:
 ```
 
 Then test the Contact page and Career page on the custom domain.
+
+## Razorpay test payment
+
+This project uses Razorpay Standard Web Checkout for Candidate Registration:
+
+- Amount is enforced server-side as `35400` paise, which is `₹354`.
+- The frontend only receives/uses the Razorpay Key ID.
+- `RAZORPAY_KEY_SECRET` must only be configured in Vercel environment variables.
+- Payment success is shown only after `/api/verify-payment` verifies the Razorpay signature server-side.
+
+To test after deployment:
+
+1. Open `https://your-domain.com/candidate-registration`.
+2. Fill the form and accept the Terms checkbox.
+3. Click `Proceed to Payment — ₹354`.
+4. Confirm Razorpay TEST checkout opens and shows `₹354`.
+5. Complete payment using Razorpay test-mode details from your Razorpay dashboard.
+6. Confirm the page shows `Registration Payment Successful` with Payment ID and Order ID.
+7. Close/cancel the checkout once to confirm the page does not show success.
 
 ## Custom domain checklist
 
