@@ -83,3 +83,62 @@ export async function sendContactEnquiry(enquiry) {
     html: `<div style="font-family:Arial,sans-serif;max-width:650px;margin:auto"><h2 style="color:#DD2E18">New Website Enquiry</h2><p>A visitor has submitted a contact enquiry through the Fescora Management website.</p><table style="width:100%;border-collapse:collapse;background:#fff7e4">${rows}</table></div>`,
   })
 }
+
+export async function sendPaidCandidateRegistration({ candidate, memberId, paymentId, orderId }) {
+  if (!isMailConfigured()) throw new Error('MAIL_NOT_CONFIGURED')
+
+  const paymentRows = [
+    row('Registration Fee', '₹300'),
+    row('GST (18%)', '₹54'),
+    row('Total Paid', '₹354'),
+    row('Payment Status', 'SUCCESS'),
+    row('Razorpay Payment ID', paymentId),
+    row('Razorpay Order ID', orderId),
+    row('Member ID', memberId),
+  ].join('')
+
+  const personalRows = [
+    row('Full Name', candidate.fullName),
+    row('Mobile / WhatsApp', candidate.mobile),
+    row('Email', candidate.email),
+    row('Date of Birth', candidate.dob),
+    row('Gender', candidate.gender),
+    row('Current City & State', candidate.location),
+    row('Pincode', candidate.pincode),
+  ].join('')
+
+  const qualificationRows = [
+    row('Highest Qualification', candidate.qualification),
+    row('Technical Qualifications', candidate.technicalQualifications || 'Not provided'),
+    row('Work Experience', candidate.experience),
+  ].join('')
+
+  const baseStyle = 'font-family:Arial,sans-serif;max-width:700px;margin:auto;color:#111;line-height:1.5'
+  const memberBlock = `<div style="background:#fff7e4;border-left:4px solid #DD2E18;padding:18px 20px;margin:20px 0"><div style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#777;font-weight:700">Your Fescora Member ID</div><div style="font-size:30px;font-weight:800;color:#DD2E18;margin-top:5px">${escapeHtml(memberId)}</div></div>`
+  const tableStyle = 'width:100%;border-collapse:collapse;background:#fff'
+
+  const emailClient = transporter()
+  const [candidateEmail, adminEmail] = await Promise.allSettled([
+    emailClient.sendMail({
+    from: env.fromEmail,
+    to: candidate.email,
+    subject: `Fescora Registration Successful - ${memberId}`,
+    html: `<div style="${baseStyle}"><h2 style="color:#DD2E18;margin-bottom:8px">Fescora Registration Successful</h2><p>Dear ${escapeHtml(candidate.fullName)},</p><p>Congratulations!</p><p>Your registration with Fescora Management has been successfully completed.</p>${memberBlock}<h3>Candidate Details</h3><table style="${tableStyle}">${personalRows}</table><h3>Qualification & Experience</h3><table style="${tableStyle}">${qualificationRows}</table><h3>Payment Details</h3><table style="${tableStyle}">${paymentRows}</table><p style="margin-top:24px">Thank you for registering with Fescora Management.</p><p><b>Fescora Management</b></p></div>`,
+    }),
+    emailClient.sendMail({
+    from: env.fromEmail,
+    to: env.careerReceiverEmail,
+    replyTo: candidate.email,
+    subject: `New Paid Candidate Registration - ${candidate.fullName} - ${memberId}`,
+    html: `<div style="${baseStyle}"><h2 style="color:#DD2E18;margin-bottom:8px">New Paid Candidate Registration</h2>${memberBlock}<h3>Candidate Details</h3><table style="${tableStyle}">${personalRows}</table><h3>Qualification & Experience</h3><table style="${tableStyle}">${qualificationRows}</table><h3>Payment Details</h3><table style="${tableStyle}">${paymentRows}</table></div>`,
+    }),
+  ])
+
+  if (candidateEmail.status === 'rejected') console.error('Candidate registration confirmation email failed:', candidateEmail.reason?.message || 'Unknown email error')
+  if (adminEmail.status === 'rejected') console.error('Paid candidate admin email failed:', adminEmail.reason?.message || 'Unknown email error')
+
+  return {
+    candidateEmailSent: candidateEmail.status === 'fulfilled',
+    adminEmailSent: adminEmail.status === 'fulfilled',
+  }
+}

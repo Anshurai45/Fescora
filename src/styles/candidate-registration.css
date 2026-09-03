@@ -242,6 +242,26 @@
   overflow-wrap: anywhere;
 }
 
+.candidate-payment-success .candidate-member-row {
+  padding: 12px;
+  background: #fff;
+  border-left: 3px solid #dd2e18;
+}
+
+.candidate-payment-success .candidate-member-row dd {
+  color: #dd2e18;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.candidate-payment-success p {
+  margin: 14px 0 0;
+  color: #31523a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .candidate-fee-card {
   position: sticky;
   top: 108px;

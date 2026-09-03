@@ -21,7 +21,7 @@ const genderOptions = ['Male', 'Female', 'Other', 'Prefer not to say']
 
 const paymentFailureMessage = 'Payment was not completed. Your registration has not been completed.'
 
-const validateEmail = (email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 const validateMobile = (mobile) => /^[6-9]\d{9}$/.test(mobile)
 const validatePincode = (pincode) => /^\d{6}$/.test(pincode)
 
@@ -35,7 +35,8 @@ function buildErrors(values, today) {
   if (!values.fullName.trim()) errors.fullName = 'Please enter your full name.'
   if (!values.mobile) errors.mobile = 'Please enter your mobile or WhatsApp number.'
   else if (!validateMobile(values.mobile)) errors.mobile = 'Please enter a valid 10-digit Indian mobile number.'
-  if (!validateEmail(values.email.trim())) errors.email = 'Please enter a valid email address.'
+  if (!values.email.trim()) errors.email = 'Please enter your email address.'
+  else if (!validateEmail(values.email.trim())) errors.email = 'Please enter a valid email address.'
   if (!values.dob) errors.dob = 'Please select your date of birth.'
   else if (values.dob > today) errors.dob = 'Date of birth cannot be in the future.'
   if (!values.gender) errors.gender = 'Please select your gender.'
@@ -159,19 +160,22 @@ export default function CandidateRegistration() {
     setPaymentStatus({ type: 'info', message: 'Creating secure payment order...' })
 
     try {
-      const order = await createRegistrationOrder()
+      const order = await createRegistrationOrder(values)
       if (Number(order.amount) !== 35400 || order.currency !== 'INR') {
         throw new Error('Payment amount verification failed before checkout.')
       }
 
       setPaymentStatus({ type: 'info', message: 'Opening Razorpay Checkout...' })
       const verifiedPayment = await openCheckout(order)
+      if (!verifiedPayment.success) throw new Error(paymentFailureMessage)
       setPaymentResult({
         name: values.fullName.trim(),
-        paymentId: verifiedPayment.razorpay_payment_id,
-        orderId: verifiedPayment.razorpay_order_id,
+        memberId: verifiedPayment.memberId,
+        paymentId: verifiedPayment.paymentId,
+        orderId: verifiedPayment.orderId,
+        emailSent: verifiedPayment.emailSent,
       })
-      setPaymentStatus({ type: 'success', message: 'Registration Payment Successful' })
+      setPaymentStatus({ type: 'success', message: 'Registration Successful' })
     } catch (error) {
       setPaymentStatus({ type: 'error', message: error.message || paymentFailureMessage })
     } finally {
@@ -218,7 +222,7 @@ export default function CandidateRegistration() {
                 </label>
 
                 <label>
-                  Email Address
+                  Email Address <b>*</b>
                   <input name="email" value={values.email} onChange={update} type="email" autoComplete="email" aria-describedby="email-error" />
                   <FieldError id="email-error" message={errors.email} />
                 </label>
@@ -313,8 +317,17 @@ export default function CandidateRegistration() {
 
             {paymentResult && (
               <div className="candidate-payment-success" role="status">
-                <h3>Your payment of ₹354 has been successfully received.</h3>
+                <h3>Registration Successful</h3>
+                <p>Congratulations, your Fescora registration has been completed successfully.</p>
                 <dl>
+                  <div className="candidate-member-row">
+                    <dt>Member ID</dt>
+                    <dd>{paymentResult.memberId}</dd>
+                  </div>
+                  <div>
+                    <dt>Payment Received</dt>
+                    <dd>₹354</dd>
+                  </div>
                   <div>
                     <dt>Candidate Name</dt>
                     <dd>{paymentResult.name}</dd>
@@ -328,6 +341,9 @@ export default function CandidateRegistration() {
                     <dd>{paymentResult.orderId}</dd>
                   </div>
                 </dl>
+                <p>
+                  {paymentResult.emailSent ? 'A confirmation email has been sent to your registered email address.' : 'Your payment is verified. We could not send the confirmation email right now, but your registration has been completed.'}
+                </p>
               </div>
             )}
 
