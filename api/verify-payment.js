@@ -51,6 +51,7 @@ async function completeRegistration({ paymentId, orderId, signature }) {
     memberId,
     paymentId,
     orderId,
+    amount: REGISTRATION_AMOUNT,
     emailSent: emailResult.candidateEmailSent && emailResult.adminEmailSent,
     candidateEmailSent: emailResult.candidateEmailSent,
     adminEmailSent: emailResult.adminEmailSent,

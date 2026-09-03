@@ -8,6 +8,7 @@ const Services = lazy(() => import("./pages/ServicesPremium"));
 const Careers = lazy(() => import("./pages/CareersApplication"));
 const Contact = lazy(() => import("./pages/ContactPremium"));
 const CandidateRegistration = lazy(() => import("./pages/CandidateRegistration"));
+const RegistrationSuccess = lazy(() => import("./pages/RegistrationSuccess"));
 
 function App() {
   return (
@@ -17,7 +18,7 @@ function App() {
       <Suspense fallback={<div className="page-loader">Loading Fescora…</div>}><Routes>
         <Route path="/" element={<Home />} /><Route path="/about" element={<About />} />
         <Route path="/services" element={<Services />} /><Route path="/industries" element={<Services industriesOnly />} />
-        <Route path="/careers" element={<Careers />} /><Route path="/candidate-registration" element={<CandidateRegistration />} /><Route path="/contact" element={<Contact />} />
+        <Route path="/careers" element={<Careers />} /><Route path="/candidate-registration" element={<CandidateRegistration />} /><Route path="/registration-success" element={<RegistrationSuccess />} /><Route path="/contact" element={<Contact />} />
       </Routes></Suspense>
 
       <Footer />

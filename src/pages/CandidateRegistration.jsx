@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { createRegistrationOrder, verifyRegistrationPayment } from '../services/paymentApi'
 
 const initialValues = {
@@ -72,10 +73,10 @@ function loadRazorpayCheckout() {
 }
 
 export default function CandidateRegistration() {
+  const navigate = useNavigate()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState({})
   const [paymentStatus, setPaymentStatus] = useState({ type: '', message: '' })
-  const [paymentResult, setPaymentResult] = useState(null)
   const [processingPayment, setProcessingPayment] = useState(false)
   const [today] = useState(getToday)
 
@@ -101,7 +102,6 @@ export default function CandidateRegistration() {
       [name]: name === 'mobile' || name === 'pincode' ? String(nextValue).replace(/\D/g, '').slice(0, name === 'mobile' ? 10 : 6) : nextValue,
     }))
     setPaymentStatus({ type: '', message: '' })
-    setPaymentResult(null)
     setErrors((current) => ({ ...current, [name]: '' }))
   }
 
@@ -149,7 +149,6 @@ export default function CandidateRegistration() {
     event.preventDefault()
     const nextErrors = buildErrors(values, today)
     setErrors(nextErrors)
-    setPaymentResult(null)
 
     if (Object.keys(nextErrors).length > 0) {
       setPaymentStatus({ type: 'error', message: 'Please fix the highlighted fields before proceeding to payment.' })
@@ -168,14 +167,17 @@ export default function CandidateRegistration() {
       setPaymentStatus({ type: 'info', message: 'Opening Razorpay Checkout...' })
       const verifiedPayment = await openCheckout(order)
       if (!verifiedPayment.success) throw new Error(paymentFailureMessage)
-      setPaymentResult({
-        name: values.fullName.trim(),
-        memberId: verifiedPayment.memberId,
-        paymentId: verifiedPayment.paymentId,
-        orderId: verifiedPayment.orderId,
-        emailSent: verifiedPayment.emailSent,
+
+      navigate('/registration-success', {
+        replace: true,
+        state: {
+          memberId: verifiedPayment.memberId,
+          paymentId: verifiedPayment.paymentId,
+          orderId: verifiedPayment.orderId,
+          amount: verifiedPayment.amount,
+          emailSent: verifiedPayment.emailSent,
+        },
       })
-      setPaymentStatus({ type: 'success', message: 'Registration Successful' })
     } catch (error) {
       setPaymentStatus({ type: 'error', message: error.message || paymentFailureMessage })
     } finally {
@@ -313,38 +315,6 @@ export default function CandidateRegistration() {
               <p className={`form-message ${paymentStatus.type}`} role="status">
                 {paymentStatus.message}
               </p>
-            )}
-
-            {paymentResult && (
-              <div className="candidate-payment-success" role="status">
-                <h3>Registration Successful</h3>
-                <p>Congratulations, your Fescora registration has been completed successfully.</p>
-                <dl>
-                  <div className="candidate-member-row">
-                    <dt>Member ID</dt>
-                    <dd>{paymentResult.memberId}</dd>
-                  </div>
-                  <div>
-                    <dt>Payment Received</dt>
-                    <dd>₹354</dd>
-                  </div>
-                  <div>
-                    <dt>Candidate Name</dt>
-                    <dd>{paymentResult.name}</dd>
-                  </div>
-                  <div>
-                    <dt>Razorpay Payment ID</dt>
-                    <dd>{paymentResult.paymentId}</dd>
-                  </div>
-                  <div>
-                    <dt>Razorpay Order ID</dt>
-                    <dd>{paymentResult.orderId}</dd>
-                  </div>
-                </dl>
-                <p>
-                  {paymentResult.emailSent ? 'A confirmation email has been sent to your registered email address.' : 'Your payment is verified. We could not send the confirmation email right now, but your registration has been completed.'}
-                </p>
-              </div>
             )}
 
             {paymentStatus.type === 'error' && Object.keys(errors).length === 0 && (
