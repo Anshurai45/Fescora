@@ -113,6 +113,19 @@ export default function CandidateRegistration() {
     if (!key) throw new Error('Razorpay public key is not configured.')
 
     return new Promise((resolve, reject) => {
+      let settled = false
+      let paymentHandlerStarted = false
+      const safeResolve = (value) => {
+        if (settled) return
+        settled = true
+        resolve(value)
+      }
+      const safeReject = (error) => {
+        if (settled) return
+        settled = true
+        reject(error)
+      }
+
       const checkout = new window.Razorpay({
         key,
         amount: 35400,
@@ -128,19 +141,22 @@ export default function CandidateRegistration() {
         },
         theme: { color: '#dd2e18' },
         modal: {
-          ondismiss: () => reject(new Error(paymentFailureMessage)),
+          ondismiss: () => {
+            if (!paymentHandlerStarted) safeReject(new Error(paymentFailureMessage))
+          },
         },
         handler: async (response) => {
+          paymentHandlerStarted = true
           try {
             const verifiedPayment = await verifyRegistrationPayment(response)
-            resolve(verifiedPayment)
+            safeResolve(verifiedPayment)
           } catch (error) {
-            reject(error)
+            safeReject(error)
           }
         },
       })
 
-      checkout.on('payment.failed', () => reject(new Error(paymentFailureMessage)))
+      checkout.on('payment.failed', () => safeReject(new Error(paymentFailureMessage)))
       checkout.open()
     })
   }
