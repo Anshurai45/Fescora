@@ -1,0 +1,12 @@
+import LegalPage from '../components/LegalPage'
+const sections = [
+  { heading: 'Website Use', paragraphs: ['You may use this website for lawful purposes and in accordance with these terms. You must not interfere with the website, attempt unauthorised access or use the website in a manner that may disrupt other users.'] },
+  { heading: 'Accuracy of Information', paragraphs: ['Website content is provided for general information. While Fescora Management aims to keep information useful and current, content may be updated without notice. You are responsible for checking that information you submit is accurate and complete.'] },
+  { heading: 'Service Enquiries', paragraphs: ['Submitting an enquiry does not create a service agreement or obligation. Any service scope, pricing, terms and timelines must be agreed separately in writing.'] },
+  { heading: 'Career Applications and Registration', paragraphs: ['Career applications and candidate registration are considered against available requirements and profile suitability. They do not guarantee employment, placement or an interview. Candidate registration is also subject to the Candidate Registration Terms.'] },
+  { heading: 'Intellectual Property', paragraphs: ['Website content, branding and materials are owned by or used by Fescora Management. They may not be copied, reproduced or used for commercial purposes without prior written permission.'] },
+  { heading: 'Third-Party Services', paragraphs: ['The website may rely on third-party services, including payment processing and communications tools. Their availability and policies are outside Fescora Management control.'] },
+  { heading: 'Limitation of Liability', paragraphs: ['To the extent permitted by applicable law, Fescora Management is not responsible for indirect, incidental or consequential loss arising from use of, or inability to use, this website or third-party services connected to it.'] },
+  { heading: 'Changes and Contact', paragraphs: ['These terms may be changed by publishing an updated version on this website. Questions about these terms may be sent to [Fescora Management official contact details].'] },
+]
+export default function TermsAndConditions() { return <LegalPage eyebrow="Legal" title="Terms and Conditions" intro="Terms that apply to use of the Fescora Management website." sections={sections} /> }

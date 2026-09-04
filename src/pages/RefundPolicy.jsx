@@ -1,0 +1,10 @@
+import LegalPage from '../components/LegalPage'
+const sections = [
+  { heading: 'Candidate Registration Fee', paragraphs: ['The candidate registration fee displayed on this website is Rs. 300 plus 18% GST, for a total payable amount of Rs. 354. The fee relates to candidate registration and profile consideration for available opportunities.'] },
+  { heading: 'Payment Processing', paragraphs: ['Payments are processed through the payment gateway available on this website. A payment confirmation is issued only after successful verification of the payment. Payment gateway processing times, reversals and technical issues may be subject to the gateway provider terms.'] },
+  { heading: 'Cancellation and Refunds', paragraphs: ['Fescora Management does not make a general promise of refunds for a completed candidate registration payment. Refund eligibility, if any, is assessed on a case-by-case basis in accordance with the actual circumstances and applicable requirements.'] },
+  { heading: 'How to Request a Review', paragraphs: ['If you believe a payment was made in error, duplicated or affected by a technical issue, contact [Fescora Management official contact details] with your name, registered email address, payment reference and a clear description of the issue.'] },
+  { heading: 'Refund Handling', paragraphs: ['Where a refund is approved, it will be processed through the appropriate payment channel where possible. Processing times may depend on the payment gateway, bank or payment provider. A refund request does not by itself confirm refund eligibility.'] },
+  { heading: 'Employment Disclaimer', paragraphs: ['Payment of the registration fee does not guarantee employment, placement or an interview. Candidate profiles are considered based on available requirements and suitability.'] },
+]
+export default function RefundPolicy() { return <LegalPage eyebrow="Candidate Registration" title="Refund Policy" intro="Information about candidate registration payments and refund requests." sections={sections} /> }
