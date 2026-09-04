@@ -202,46 +202,6 @@
   background: #fff0ee;
 }
 
-.candidate-payment-success {
-  background: #eaf8ec;
-  border: 1px solid #cdebd3;
-  padding: 18px;
-  margin: 14px 0;
-}
-
-.candidate-payment-success h3 {
-  margin: 0 0 14px;
-  font-size: 18px;
-  line-height: 1.35;
-  color: #176b28;
-}
-
-.candidate-payment-success dl {
-  display: grid;
-  gap: 9px;
-  margin: 0;
-}
-
-.candidate-payment-success div {
-  display: grid;
-  grid-template-columns: 150px minmax(0, 1fr);
-  gap: 12px;
-}
-
-.candidate-payment-success dt {
-  color: #4d6a55;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.candidate-payment-success dd {
-  min-width: 0;
-  margin: 0;
-  color: #123f1d;
-  font-size: 13px;
-  overflow-wrap: anywhere;
-}
-
 .candidate-fee-card {
   position: sticky;
   top: 108px;
@@ -344,8 +304,4 @@
     font-size: 54px;
   }
 
-  .candidate-payment-success div {
-    grid-template-columns: 1fr;
-    gap: 3px;
-  }
 }

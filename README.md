@@ -89,6 +89,10 @@ This project uses Razorpay Standard Web Checkout for Candidate Registration:
 - The frontend only receives/uses the Razorpay Key ID.
 - `RAZORPAY_KEY_SECRET` must only be configured in Vercel environment variables.
 - Payment success is shown only after `/api/verify-payment` verifies the Razorpay signature server-side.
+- After verified payment, the server generates a Member ID in `FSC-YYYY-XXXXXX` format.
+- Candidate and admin confirmation emails are attempted after successful payment verification.
+- If email delivery fails, the payment remains successful and the UI does not expose SMTP errors.
+- Duplicate callbacks are protected with an in-memory per-instance payment cache. Without a database, this is best-effort across serverless instances.
 
 To test after deployment:
 
@@ -97,8 +101,9 @@ To test after deployment:
 3. Click `Proceed to Payment — ₹354`.
 4. Confirm Razorpay TEST checkout opens and shows `₹354`.
 5. Complete payment using Razorpay test-mode details from your Razorpay dashboard.
-6. Confirm the page shows `Registration Payment Successful` with Payment ID and Order ID.
-7. Close/cancel the checkout once to confirm the page does not show success.
+6. Confirm the page shows `Registration Successful` with Member ID and Payment ID.
+7. Confirm the candidate email and admin email are received.
+8. Close/cancel the checkout once to confirm the page does not show success.
 
 ## Custom domain checklist
 

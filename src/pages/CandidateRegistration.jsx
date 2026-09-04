@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { createRegistrationOrder, verifyRegistrationPayment } from '../services/paymentApi'
 
 const initialValues = {
@@ -21,7 +22,7 @@ const genderOptions = ['Male', 'Female', 'Other', 'Prefer not to say']
 
 const paymentFailureMessage = 'Payment was not completed. Your registration has not been completed.'
 
-const validateEmail = (email) => !email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 const validateMobile = (mobile) => /^[6-9]\d{9}$/.test(mobile)
 const validatePincode = (pincode) => /^\d{6}$/.test(pincode)
 
@@ -35,7 +36,8 @@ function buildErrors(values, today) {
   if (!values.fullName.trim()) errors.fullName = 'Please enter your full name.'
   if (!values.mobile) errors.mobile = 'Please enter your mobile or WhatsApp number.'
   else if (!validateMobile(values.mobile)) errors.mobile = 'Please enter a valid 10-digit Indian mobile number.'
-  if (!validateEmail(values.email.trim())) errors.email = 'Please enter a valid email address.'
+  if (!values.email.trim()) errors.email = 'Please enter your email address.'
+  else if (!validateEmail(values.email.trim())) errors.email = 'Please enter a valid email address.'
   if (!values.dob) errors.dob = 'Please select your date of birth.'
   else if (values.dob > today) errors.dob = 'Date of birth cannot be in the future.'
   if (!values.gender) errors.gender = 'Please select your gender.'
@@ -71,10 +73,10 @@ function loadRazorpayCheckout() {
 }
 
 export default function CandidateRegistration() {
+  const navigate = useNavigate()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState({})
   const [paymentStatus, setPaymentStatus] = useState({ type: '', message: '' })
-  const [paymentResult, setPaymentResult] = useState(null)
   const [processingPayment, setProcessingPayment] = useState(false)
   const [today] = useState(getToday)
 
@@ -100,7 +102,6 @@ export default function CandidateRegistration() {
       [name]: name === 'mobile' || name === 'pincode' ? String(nextValue).replace(/\D/g, '').slice(0, name === 'mobile' ? 10 : 6) : nextValue,
     }))
     setPaymentStatus({ type: '', message: '' })
-    setPaymentResult(null)
     setErrors((current) => ({ ...current, [name]: '' }))
   }
 
@@ -112,6 +113,19 @@ export default function CandidateRegistration() {
     if (!key) throw new Error('Razorpay public key is not configured.')
 
     return new Promise((resolve, reject) => {
+      let settled = false
+      let paymentHandlerStarted = false
+      const safeResolve = (value) => {
+        if (settled) return
+        settled = true
+        resolve(value)
+      }
+      const safeReject = (error) => {
+        if (settled) return
+        settled = true
+        reject(error)
+      }
+
       const checkout = new window.Razorpay({
         key,
         amount: 35400,
@@ -127,19 +141,22 @@ export default function CandidateRegistration() {
         },
         theme: { color: '#dd2e18' },
         modal: {
-          ondismiss: () => reject(new Error(paymentFailureMessage)),
+          ondismiss: () => {
+            if (!paymentHandlerStarted) safeReject(new Error(paymentFailureMessage))
+          },
         },
         handler: async (response) => {
+          paymentHandlerStarted = true
           try {
             const verifiedPayment = await verifyRegistrationPayment(response)
-            resolve(verifiedPayment)
+            safeResolve(verifiedPayment)
           } catch (error) {
-            reject(error)
+            safeReject(error)
           }
         },
       })
 
-      checkout.on('payment.failed', () => reject(new Error(paymentFailureMessage)))
+      checkout.on('payment.failed', () => safeReject(new Error(paymentFailureMessage)))
       checkout.open()
     })
   }
@@ -148,7 +165,6 @@ export default function CandidateRegistration() {
     event.preventDefault()
     const nextErrors = buildErrors(values, today)
     setErrors(nextErrors)
-    setPaymentResult(null)
 
     if (Object.keys(nextErrors).length > 0) {
       setPaymentStatus({ type: 'error', message: 'Please fix the highlighted fields before proceeding to payment.' })
@@ -159,19 +175,25 @@ export default function CandidateRegistration() {
     setPaymentStatus({ type: 'info', message: 'Creating secure payment order...' })
 
     try {
-      const order = await createRegistrationOrder()
+      const order = await createRegistrationOrder(values)
       if (Number(order.amount) !== 35400 || order.currency !== 'INR') {
         throw new Error('Payment amount verification failed before checkout.')
       }
 
       setPaymentStatus({ type: 'info', message: 'Opening Razorpay Checkout...' })
       const verifiedPayment = await openCheckout(order)
-      setPaymentResult({
-        name: values.fullName.trim(),
-        paymentId: verifiedPayment.razorpay_payment_id,
-        orderId: verifiedPayment.razorpay_order_id,
+      if (!verifiedPayment.success) throw new Error(paymentFailureMessage)
+
+      navigate('/registration-success', {
+        replace: true,
+        state: {
+          memberId: verifiedPayment.memberId,
+          paymentId: verifiedPayment.paymentId,
+          orderId: verifiedPayment.orderId,
+          amount: verifiedPayment.amount,
+          emailSent: verifiedPayment.emailSent,
+        },
       })
-      setPaymentStatus({ type: 'success', message: 'Registration Payment Successful' })
     } catch (error) {
       setPaymentStatus({ type: 'error', message: error.message || paymentFailureMessage })
     } finally {
@@ -218,7 +240,7 @@ export default function CandidateRegistration() {
                 </label>
 
                 <label>
-                  Email Address
+                  Email Address <b>*</b>
                   <input name="email" value={values.email} onChange={update} type="email" autoComplete="email" aria-describedby="email-error" />
                   <FieldError id="email-error" message={errors.email} />
                 </label>
@@ -309,26 +331,6 @@ export default function CandidateRegistration() {
               <p className={`form-message ${paymentStatus.type}`} role="status">
                 {paymentStatus.message}
               </p>
-            )}
-
-            {paymentResult && (
-              <div className="candidate-payment-success" role="status">
-                <h3>Your payment of ₹354 has been successfully received.</h3>
-                <dl>
-                  <div>
-                    <dt>Candidate Name</dt>
-                    <dd>{paymentResult.name}</dd>
-                  </div>
-                  <div>
-                    <dt>Razorpay Payment ID</dt>
-                    <dd>{paymentResult.paymentId}</dd>
-                  </div>
-                  <div>
-                    <dt>Razorpay Order ID</dt>
-                    <dd>{paymentResult.orderId}</dd>
-                  </div>
-                </dl>
-              </div>
             )}
 
             {paymentStatus.type === 'error' && Object.keys(errors).length === 0 && (

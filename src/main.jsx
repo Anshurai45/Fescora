@@ -8,6 +8,7 @@ import './styles/poppins.css'
 import './styles/navbar-alignment.css'
 import './styles/career-application.css'
 import './styles/candidate-registration.css'
+import './styles/registration-success.css'
 import './styles/responsive.css'
 import App from './App.jsx'
 

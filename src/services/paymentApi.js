@@ -8,8 +8,12 @@ async function parseResponse(response) {
   return data
 }
 
-export async function createRegistrationOrder() {
-  const response = await fetch(`${baseUrl}/api/create-order`, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+export async function createRegistrationOrder(candidate) {
+  const response = await fetch(`${baseUrl}/api/create-order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ candidate }),
+  })
   return parseResponse(response)
 }
 
