@@ -12,7 +12,7 @@ import './styles/registration-success.css'
 import './styles/responsive.css'
 import App from './App.jsx'
 
-const schema = { '@context': 'https://schema.org', '@type': 'Organization', name: 'Fescora', url: 'https://fescora.com', description: 'Technology, staffing, consulting and operations support services.' }
+const schema = { '@context': 'https://schema.org', '@type': 'Organization', name: 'Fescora Management', url: 'https://fescora.com', description: 'Security, manpower and facility-support services for businesses.' }
 const script = document.createElement('script')
 script.type = 'application/ld+json'
 script.text = JSON.stringify(schema)

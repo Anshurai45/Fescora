@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom'
 function formatAmount(amount) {
   const numericAmount = Number(amount || 35400)
   const rupees = numericAmount > 1000 ? numericAmount / 100 : numericAmount
-  return `₹${rupees.toLocaleString('en-IN')}`
+  return `â‚¹${rupees.toLocaleString('en-IN')}`
 }
 
 export default function RegistrationSuccess() {
@@ -95,7 +95,7 @@ export default function RegistrationSuccess() {
               <li>Your registration details have been received.</li>
               <li>{emailSent ? 'A confirmation email has been sent to your registered email address.' : 'Please contact Fescora Management if you need email confirmation assistance.'}</li>
               <li>Our recruitment team will review your profile.</li>
-              <li>Our team will contact you regarding suitable job opportunities and next steps.</li>
+              <li>If your profile matches an available requirement, our team will contact you regarding the next steps.</li>
             </ul>
           </div>
 
