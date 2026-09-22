@@ -48,20 +48,7 @@ Then open `http://localhost:5173` and submit both forms.
 
 In Vercel Project Settings -> Environment Variables, add these to Production and Preview:
 
-```env
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_SECURE=false
-SMTP_USER=your-sender@gmail.com
-SMTP_PASS=your-16-character-app-password
-FROM_EMAIL=your-sender@gmail.com
-CONTACT_RECEIVER_EMAIL=hr.kk@fescora.com
-CAREER_RECEIVER_EMAIL=anshu.rai@fescora.com
-VITE_RAZORPAY_KEY_ID=your_test_key_id
-RAZORPAY_KEY_ID=your_test_key_id
-RAZORPAY_KEY_SECRET=your_test_key_secret
-RAZORPAY_AMOUNT=35400
-```
+
 
 Important: do not set `VITE_API_URL` on Vercel when the API is in this same project. The frontend will call `/api/contact` and `/api/careers/apply` on your custom domain automatically. If `VITE_API_URL` is already set to `http://localhost:5000` in Vercel, remove it and redeploy.
 
