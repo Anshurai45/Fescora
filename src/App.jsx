@@ -30,7 +30,7 @@ function App() {
       }}
     >
       <img
-        src="/public/chatgpt.png"
+        src="/chatgpt.png"
         alt="Promotional poster"
         style={{
           display: "block",
