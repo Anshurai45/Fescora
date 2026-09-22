@@ -15,6 +15,50 @@ const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const CandidateRegistrationTerms = lazy(() => import("./pages/CandidateRegistrationTerms"));
 
 function App() {
+  // TEMPORARY HOLDING PAGE: the original application remains below for restoration.
+  return (
+    <main
+      style={{
+        minHeight: "100svh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: "22px",
+        padding: "18px",
+        background: "#080000",
+      }}
+    >
+      <img
+        src="/public/chatgpt.png"
+        alt="Promotional poster"
+        style={{
+          display: "block",
+          width: "min(100%, 1680px)",
+          maxHeight: "calc(100svh - 118px)",
+          objectFit: "contain",
+          borderRadius: "10px",
+          boxShadow: "0 0 40px rgba(245, 20, 33, .32)",
+        }}
+      />
+      <button
+        type="button"
+        style={{
+          border: "2px solid #ff5a5f",
+          borderRadius: "999px",
+          padding: "14px 30px",
+          background: "linear-gradient(135deg, #ff171d, #a90008)",
+          boxShadow: "0 8px 28px rgba(255, 23, 29, .5)",
+          color: "#fff",
+          font: "800 clamp(1rem, 2.4vw, 1.3rem)/1 Arial, sans-serif",
+          cursor: "pointer",
+        }}
+      >
+        DK 1000 Daal do
+      </button>
+    </main>
+  );
+
   return (
     <BrowserRouter>
       <Navbar />
